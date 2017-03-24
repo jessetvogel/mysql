@@ -24,7 +24,8 @@
 }
 
 #menu {
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #input_database_wrapper {
@@ -41,10 +42,12 @@
 #content {
   padding-left: 32px;
   overflow: scroll;
+  width: 100%;
 }
 
 #content table td {
-  min-width: 96px;
+  margin-left: 16px;
+  margin-right: 16px;
 }
 
 /* ------------------------------------------------------------------------ */

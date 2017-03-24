@@ -55,14 +55,14 @@ function load_table(database, table) {
     thead.append(tr);
     t.append(thead);
     if(data['data'] != undefined) {
+      var tbody = $('<tbody>');
       for(var i = 0;i < data['data'].length;i ++) {
-        var tbody = $('<tbody>');
         var tr = $('<tr>');
         for(var field in data['data'][i])
           tr.append($('<td>').text(data['data'][i][field]));
-        tbody.append(tr);
-        t.append(tbody);
+          tbody.append(tr);
       }
+      t.append(tbody);
     }
     $('#content')
       .html('')
