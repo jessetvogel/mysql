@@ -1,20 +1,81 @@
 $(document).ready(function () {
-
-  load_databases();
-
-  $('#input_database').change(function () {
-    $(this).find('option:selected').each(function () {
-      load_tables($(this).text());
-    });
-  });
-
+  initialize();
 });
 
-function menu_add_item(item, callback) {
-  $('#menu').append($('<li>').append($('<a>').text(item).attr('href', '#').click(function () { $(this).addClass('active'); callback(); })));
+function initialize() {
+  check_login(function() {
+    $.ajax({
+      url: 'html/index.html'
+    }).done(function (data) {
+      $('body').prepend(data);
+
+      load_databases();
+
+      $('#input_database').change(function () {
+        $(this).find('option:selected').each(function () {
+          load_tables($(this).text());
+        });
+      });
+
+      $('#logout').click(function () {
+        $.ajax({
+          url: 'php/logout.php'
+        }).done(function () {
+          location.reload();
+        });
+      });
+    });
+  });
 }
 
+function check_login(callback) {
+  $.ajax({
+    url: 'php/check_login.php'
+  }).done(function (data) {
+    if(data == "true")
+      callback();
+    else {
+      login(data);
+    }
+  })
+}
 
+function menu_add_item(item, callback) {
+  $('#table_list').append($('<li>').append($('<a>').text(item).attr('href', '#').click(function () { $(this).addClass('active'); callback(); })));
+}
+
+function login(message) {
+  $('body').append($('<div>').attr('id', 'login'));
+  $.ajax({
+    url: 'html/login.html'
+  }).done(function(data) {
+    $('#login').css({opacity: 0}).html(data).animate({opacity: 1}, 500);
+    $('#login #login_message').html(message);
+    $('#login form').submit(function (e) {
+      e.preventDefault();
+      var host = $('#input_host').val();
+      var username = $('#input_username').val();
+      var password = $('#input_password').val();
+      $.ajax({
+        url: 'php/login.php',
+        type: 'post',
+        data: {
+          host: host,
+          username: username,
+          password: password
+        }
+      }).done(function (data) {
+        if(data == "true") {
+          $('#login').animate({opacity: 0}, 500, function() { $(this).remove(); });
+          initialize();
+        }
+        else {
+          $('#login_message').html(data);
+        }
+      });
+    });
+  });
+}
 
 function load_databases() {
   $.ajax({
@@ -33,7 +94,7 @@ function load_tables(database) {
     url: 'php/tables.php?database=' + database
   }).done(function(json) {
     var data = JSON.parse(json);
-    $('#menu').html('');
+    $('#table_list').html('');
     for(var i = 0;i < data.length;i ++) {
       (function(table) {
         menu_add_item(table, function () { load_table(database, table); });

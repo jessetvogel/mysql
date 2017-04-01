@@ -1,11 +1,12 @@
 <?php
 
-$host = '127.0.0.1';
-$username = 'root';
-$password = 'wachtwoord';
-$database = 'database';
+session_start();
 
-$mysqli = connect($host, $username, $password);
+if(isset($_SESSION['login'])) {
+     $host = $_SESSION['login']['host'];
+     $username = $_SESSION['login']['username'];
+     $password = $_SESSION['login']['password'];
+}
 
 /* ------------------------------------------------------------------------ */
 function connect($host, $username, $password) {

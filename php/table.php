@@ -2,6 +2,8 @@
 
 require('mysql.php');
 
+$mysqli = connect($host, $username, $password);
+
 $database = $_GET['database'];
 $table = $_GET['table'];
 

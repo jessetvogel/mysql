@@ -2,8 +2,13 @@
 
 require('mysql.php');
 
-$mysqli = connect($host, $username, $password);
+if(!isset($_SESSION['login'])) {
+  exit();
+}
 
-echo json_encode(databases($mysqli));
+$mysqli = connect($host, $username, $password);
+$mysqli->close();
+
+echo "true";
 
 ?>
