@@ -81,3 +81,19 @@
 .nav > li > a {
   border-radius: 0px;
 }
+
+a.disabled {
+  text-decoration: none;
+  color: rgb(128, 128, 128);
+  cursor: default;
+}
+
+#table_navigation {
+  line-height: 16px;
+}
+
+span.separator {
+  border-left: 1px solid rgb(128, 128, 128);
+  margin-left: 8px;
+  margin-right: 8px;
+}

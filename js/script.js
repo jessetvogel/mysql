@@ -97,15 +97,17 @@ function load_tables(database) {
     $('#table_list').html('');
     for(var i = 0;i < data.length;i ++) {
       (function(table) {
-        menu_add_item(table, function () { load_table(database, table); });
+        menu_add_item(table, function () { load_table(database, table, 0); });
       })(data[i]);
     }
   });
 }
 
-function load_table(database, table) {
+var table_offset = 0;
+var table_amount_rows = 5;
+function load_table(database, table, offset) {
   $.ajax({
-    url: 'php/table.php?database=' + database + '&table=' + table
+    url: 'php/table.php?database=' + database + '&table=' + table + '&amount_rows=' + table_amount_rows + '&offset=' + offset
   }).done(function(json) {
     var data = JSON.parse(json);
     var t = $('<table>').addClass('table').addClass('table-striped');
@@ -125,9 +127,43 @@ function load_table(database, table) {
       }
       t.append(tbody);
     }
-    $('#content')
-      .html('')
-      .append($('<h1>').text(table))
-      .append(t);
+    var previous = $('<a>').text('Previous');
+    if(offset > 0) {
+      previous
+        .attr('href', '#')
+        .click(function () { load_table(database, table, Math.max(0, offset - table_amount_rows)); });
+    } else {
+      previous.addClass('disabled');
+    }
+    var next = $('<a>').text('Next');
+    if(offset + table_amount_rows < data['numrows']) {
+      next
+        .attr('href', '#')
+        .click(function () { load_table(database, table, offset + table_amount_rows); });
+    } else {
+      next.addClass('disabled');
+    }
+    var navigation = $('<div>')
+      .attr('id', 'table_navigation')
+      .append(previous)
+      .append($('<span>').addClass('separator'))
+      .append($('<span>').text("Rows " + offset + " - " + Math.min(offset + table_amount_rows - 1, data['numrows'] - 1) + ""))
+      .append($('<span>').addClass('separator'))
+      .append(next);
+
+    if(data['numrows'] > 0) {
+      $('#content')
+        .html('')
+        .append($('<h1>').text(table))
+        .append(t)
+        .append(navigation);
+    }
+    else {
+      $('#content')
+        .html('')
+        .append($('<h1>').text(table))
+        .append(t)
+        .append($('<i>').text('This table contains no data'));
+    }
   });
 }
